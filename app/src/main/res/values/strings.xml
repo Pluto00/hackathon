@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FzuGrade2</string>
+
+    <string name="hint_password">密码</string>
+    <string name="hint_id">账号</string>
+    <string name="forget_password">忘记密码?</string>
+    <string name="login">登\t\t\t\t录</string>
+
+</resources>
