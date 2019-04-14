@@ -9,15 +9,6 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-
-@app.route('/api_1_0/create_class_mark', methods=['GET'])
-def create():
-    create_student()
-    create_mark()
-    create_rank()
-    create_class_mark()
-
-
 @app.route('/api_1_0/create_class_mark', methods=['GET'])
 def create_class_mark():
     grade = ['大一上', '大一下', '大二上', '大二下']
