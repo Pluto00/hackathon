@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">@color/colorTheme</color>
-    <color name="colorPrimaryDark">#fff</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimaryDark">#ccc</color>
+    <color name="colorAccent">@color/colorTheme</color>
 
     <color name="colorTheme">#3371d8</color>
+    <color name="colorBackground">#FAFAFA</color>
+    <color name="transparent">#0000</color>
+
+    <color name="colorTab">#ffffff</color>
+    <color name="colorTabUnselected">#ccc</color>
+    <color name="colorFont">#555</color>
+
+    <color name="colorGrade1">#80cc66</color>
+    <color name="colorGrade2">#b5cc66</color>
+    <color name="colorGrade3">#cc9466</color>
+    <color name="colorGrade4">#cc6666</color>
 </resources>
