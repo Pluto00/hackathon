@@ -30,7 +30,6 @@
             android:lineSpacingExtra="1dp"
             android:textSize="14sp"
             android:textColor="@color/colorFont"
-            android:text="@string/info"
             />
 
         <TextView
@@ -40,7 +39,6 @@
             android:layout_marginTop="5dp"
             android:textSize="12sp"
             android:textColor="@color/colorFont"
-            android:text="@string/info2"
             />
     </LinearLayout>
 
@@ -52,8 +50,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="20dp"
-        android:textSize="18sp"
-        android:text="95"
+        android:textSize="20sp"
         android:textColor="@color/colorFont"/>
 
     <View

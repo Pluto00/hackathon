@@ -8,6 +8,11 @@
     <string name="remenber_pw">记住密码</string>
     <string name="login">登\t\t\t\t录</string>
 
+    <string name="term1">大一上学期</string>
+    <string name="term2">大一下学期</string>
+    <string name="term3">大二上学期</string>
+    <string name="term4">大二下学期</string>
+
     <string name="tab1">成\t绩\t概\t览</string>
     <string name="tab2">学\t科\t分\t析</string>
     <string name="tab3">排\t名\t曲\t线</string>
@@ -16,5 +21,20 @@
     <string name="info">毛泽东思想和中国特色社会主义理论体系概论（上）</string>
     <string name="info2">平均分：83.25\t\t\t\t单科排名：35</string>
 
+    <string name="t1">及格率</string>
+    <string name="t2">总及格率</string>
+    <string name="t3">优秀率</string>
+    <string name="t4">总优秀率</string>
     <string name="all_score">综合评分：</string>
+
+    <string name="left_label1">班级排名</string>
+    <string name="right_label1">比较上次</string>
+    <string name="left_label2">最低排名</string>
+    <string name="right_label2">最高排名</string>
+    <string name="tl1">48</string>
+    <string name="tr1">5</string>
+    <string name="tl2">48</string>
+    <string name="tr2">20</string>
+
+    <string name="about">关于</string>
 </resources>

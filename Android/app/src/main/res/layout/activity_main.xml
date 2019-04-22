@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.design.widget.AppBarLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorBackground"
+    android:fitsSystemWindows="true"
     >
 
-    <!--作为tab和toolbar的共同背景，易于实现背景动画-->
     <LinearLayout
         android:id="@+id/toolbar_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/colorTheme"
-        android:elevation="5dp"
-        android:fitsSystemWindows="true">
+        android:background="@color/colorTheme">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -24,17 +21,60 @@
             android:layout_height="wrap_content"
             android:background="@color/transparent"
             app:titleTextColor="#fff"
-            app:title="@string/toolbar_title_main">
+            >
 
             <ImageView
-                android:id="@+id/arrow_image"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="20dp"
+                android:id="@+id/menu"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/menu"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_gravity="start"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="41dp"
                 android:contentDescription="@string/app_name"
-                android:background="@drawable/arrow"
                 android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="40dp"
+                android:textSize="18sp"
+                android:textColor="@color/md_white_1000"
+                android:text="@string/app_name"/>
+
+            <LinearLayout
+                android:id="@+id/term_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="end"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="45dp"
+                android:clickable="true">
+
+                <TextView
+                    android:id="@+id/term_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="@color/md_white_1000"
+                    android:textSize="13sp"
+                    android:text="@string/term4"
+                    />
+                <ImageView
+                    android:id="@+id/arrow_image"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/app_name"
+                    android:background="@drawable/arrow"
+                    android:clickable="true"/>
+
+            </LinearLayout>
+
 
         </android.support.v7.widget.Toolbar>
 
@@ -51,6 +91,7 @@
             app:tl_indicator_corner_radius="1.5dp"
             app:tl_textSelectColor="@color/colorTab"
             app:tl_textUnselectColor="@color/colorTabUnselected"
+            android:layout_marginTop="-10dp"
             />
 
     </LinearLayout>
@@ -62,4 +103,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+</android.support.design.widget.AppBarLayout>

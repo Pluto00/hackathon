@@ -11,8 +11,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.AboutActivity"
+            android:theme="@style/AboutTheme">
+        </activity>
         <activity android:name=".activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -28,9 +30,7 @@
         <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait">
-
         </activity>
-
     </application>
 
 </manifest>

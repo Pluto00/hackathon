@@ -1,19 +1,21 @@
 package com.example.fzugrade2.adapter
 
-import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.shapes.RoundRectShape
-import android.graphics.drawable.shapes.Shape
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.fzugrade2.R
-import com.example.fzugrade2.bean.GradeBean
+import com.example.fzugrade2.bean.CourseBean
 
-class Tab1RVAdapter(var mGradeList: List<GradeBean>): RecyclerView.Adapter<Tab1RVAdapter.ViewHolder>(){
+class Tab1RVAdapter(private var mGradeList: ArrayList<CourseBean>? = null): RecyclerView.Adapter<Tab1RVAdapter.ViewHolder>(){
+
+    fun setList(list: ArrayList<CourseBean>): Tab1RVAdapter{
+        mGradeList = list
+        return this
+    }
 
     class ViewHolder(v: View): RecyclerView.ViewHolder(v){
         var circle: View = v.findViewById(R.id.circle_v)
@@ -28,21 +30,21 @@ class Tab1RVAdapter(var mGradeList: List<GradeBean>): RecyclerView.Adapter<Tab1R
     }
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-        val gradeBean = mGradeList[p1]
+        val gradeBean = mGradeList?.get(p1)
         //圆点颜色
         val d = ShapeDrawable(OvalShape())
-        d.paint.color = gradeBean.segment
+        d.paint.color = gradeBean!!.segment
         p0.circle.background = d
 
         //文本
         p0.apply {
-            course.text = gradeBean.course
+            course.text = gradeBean.name
             statistics.text = gradeBean.statistics
-            grade.text = gradeBean.grade
+            grade.text = gradeBean.grade.toString()
         }
 
     }
 
-    override fun getItemCount(): Int = mGradeList.size
+    override fun getItemCount(): Int = mGradeList!!.size
 
 }

@@ -2,15 +2,21 @@ package com.example.fzugrade2.adapter
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import com.example.fzugrade2.R
-import com.example.fzugrade2.bean.GradeBean
+import com.example.fzugrade2.RadarMarkerView
+import com.example.fzugrade2.bean.CourseBean
+import com.example.fzugrade2.bean.InfoBean
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.charts.RadarChart
@@ -18,26 +24,37 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import kotlin.collections.ArrayList
 
-class MyPagerAdapter(private var pageCount: Int,private var context: Context): PagerAdapter(){
+class MyPagerAdapter(
+    private var pageCount: Int,
+    private var context: Context,
+    private var list: ArrayList<CourseBean>,
+    private var info: InfoBean): PagerAdapter()
+{
 
-
-    private val blue = Color.parseColor("#373371d8")
-    private val blue2 = Color.parseColor("#623371d8")
-    private val red = Color.parseColor("#37cc5e50")
+    private val blue = Color.parseColor("#37e58a55")
+    private val blue2 = Color.parseColor("#62e58a55")
+    private val red = Color.parseColor("#37549f8b")
     private val grey = Color.parseColor("#37888888")
 
-    lateinit var radar: RadarChart
-    lateinit var pie1: PieChart
-    lateinit var pie2: PieChart
-    lateinit var pie3: PieChart
-    lateinit var pie4: PieChart
+    private lateinit var radar: RadarChart
+    private var pieList = ArrayList<PieChart>()
+    private lateinit var data: LineGraphSeries<DataPoint>
+    private lateinit var line: GraphView
+    lateinit var rv: RecyclerView
+    private lateinit var layout2: View
+    private lateinit var layout3: View
+    private lateinit var mv: RadarMarkerView
+    private lateinit var textView: TextView
 
+    private lateinit var tl1: TextView
+    private lateinit var tr1: TextView
+    private lateinit var tl2: TextView
+    private lateinit var tr2: TextView
 
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
@@ -51,24 +68,30 @@ class MyPagerAdapter(private var pageCount: Int,private var context: Context): P
                 layout
             }
             1 -> {
-                layout = LayoutInflater.from(context)
+                layout2 = LayoutInflater.from(context)
                     .inflate(R.layout.tab2_layout,container,false)
-                initRadar(layout)
-                initPie(layout)
-                container.addView(layout)
-                layout
+                radar = layout2.findViewById(R.id.tab2_radar)
+                textView = layout2.findViewById(R.id.all_tv)
+                initRadar()
+                initPie()
+                layout2.findViewById<ImageView>(R.id.statement).setOnClickListener {
+                    Toast.makeText(layout2.context,"默认学分为1，综合评分为总平均分",Toast.LENGTH_SHORT).show()
+                }
+                container.addView(layout2)
+                layout2
             }
             else -> {
-                layout = LayoutInflater.from(context)
+                layout3 = LayoutInflater.from(context)
                     .inflate(R.layout.tab3_layout,container,false)
-                initLine(layout)
-                container.addView(layout)
-                layout
+                initLine(layout3)
+                container.addView(layout3)
+                layout3
             }
         }
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+
         container.removeView(`object` as View)
     }
 
@@ -82,19 +105,16 @@ class MyPagerAdapter(private var pageCount: Int,private var context: Context): P
 
     //初始化折线图
     private fun initLine(v: View){
-        val line = v.findViewById<GraphView>(R.id.line_chart)
-        val data = LineGraphSeries<DataPoint>(arrayOf(
-            DataPoint(0.0,1.0),
-            DataPoint(1.0,1.5),
-            DataPoint(2.0,3.0),
-            DataPoint(4.0,6.0)
-        ))
-        line.addSeries(data)
+        line = v.findViewById(R.id.line_chart)
+        line.titleColor = blue2
+        line.setOnClickListener {
+            Toast.makeText(context,"最后一个数据为下一次的预测排名",Toast.LENGTH_SHORT).show()
+        }
+        setInfoChart2Data()
     }
 
     //初始化雷达图
-    private fun initRadar(v: View){
-        radar = v.findViewById(R.id.tab2_radar)
+    private fun initRadar(){
         radar.apply {
             description.isEnabled = false
             xAxis.run {
@@ -105,7 +125,6 @@ class MyPagerAdapter(private var pageCount: Int,private var context: Context): P
                     }
                 }
                 textSize = 8f
-                //axisLineWidth = 5f
             }
             yAxis.run {
                 axisMinimum = 0f
@@ -118,111 +137,209 @@ class MyPagerAdapter(private var pageCount: Int,private var context: Context): P
                 yOffset = 20f
                 xOffset = 20f
             }
-            //数据
-            val entries = arrayListOf(RadarEntry(62f), RadarEntry(71f),
-                RadarEntry(80f),RadarEntry(91f), RadarEntry(44f), RadarEntry(120f)
-            )
-            val dataSet = RadarDataSet(entries,"个人得分").apply {
+            post{
+                radar.animateXY(500,500,Easing.EaseInBounce)
+            }
+            webLineWidthInner = 0.7f
+        }
+        //数据
+        setCourseChartData()
+    }
+
+    private fun setCourseChartData(){
+        mv = RadarMarkerView(layout2.context,R.layout.radar_marker)
+        mv.chartView =
+        radar.apply {
+            //clear()
+            val entries = ArrayList<RadarEntry>()
+            val entries2 = ArrayList<RadarEntry>()
+            list.forEach {
+                entries.add(RadarEntry(it.grade,it.name))
+                entries2.add(RadarEntry(it.average,it.name))
+            }
+
+            val dataSet = RadarDataSet(entries, "个人得分").apply {
                 color = blue
                 fillColor = blue
                 setDrawFilled(true)
             }
 
-            val sets = arrayListOf<IRadarDataSet>(dataSet)
-            val finalData = RadarData(sets).apply {
+            val dataSet2 = RadarDataSet(entries2, "班级平均分").apply {
+                color = red
+                fillColor = red
+                setDrawFilled(true)
+            }
+
+            val finalData = RadarData(dataSet,dataSet2).apply {
                 setValueTextSize(8f)
                 setDrawValues(false)
             }
 
             data = finalData
             data.setValueTextSize(10f)
-            animateXY(500,500,Easing.EaseInBounce)
+            isClickable = true
+            marker = mv
+        }
+    }
+
+    private fun setInfoChart1Data(){
+        //饼图数据
+        pieList[0].centerText = "${info.rate1}%"
+        pieList[1].centerText = "${info.rate2}%"
+        pieList[2].centerText = "${info.rate3}%"
+        pieList[3].centerText = "${info.rate4}%"
+        val setArray = arrayListOf(
+            PieDataSet(arrayListOf(PieEntry(info.rate1.toFloat()), PieEntry(100-info.rate1.toFloat())),"ALL"),
+            PieDataSet(arrayListOf(PieEntry(info.rate2.toFloat()), PieEntry(100-info.rate2.toFloat())),"ALL"),
+            PieDataSet(arrayListOf(PieEntry(info.rate3.toFloat()), PieEntry(100-info.rate3.toFloat())),"ALL"),
+            PieDataSet(arrayListOf(PieEntry(info.rate4.toFloat()), PieEntry(100-info.rate4.toFloat())),"ALL"))
+        var i = 0
+        pieList.forEach{
+            setArray[i].apply {
+                setColors(blue2,grey)
+                selectionShift = 3f
+                yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
+                setDrawValues(false)
+                val data = PieData(this)
+                data.setValueFormatter(PercentFormatter())
+                it.data = data
+            }
+            it.post {
+                it.animateXY(600,600)
+            }
+
+            i++
+        }
+    }
+
+    //折线图数据
+    private fun setInfoChart2Data(){
+        tl1 = layout3.findViewById(R.id.tv_left1)
+        tr1 = layout3.findViewById(R.id.tv_right1)
+        tl2 = layout3.findViewById(R.id.tv_left2)
+        tr2 = layout3.findViewById(R.id.tv_right2)
+        //折线图数据
+        val spf = context.getSharedPreferences("data",Context.MODE_PRIVATE)
+        val list = ArrayList<Double>()
+        var average = 0
+        for (i in 0..3) {
+            list.add(spf.getInt("rank${i+1}", -1).toDouble())
+            average += list[i].toInt()
+        }
+        average /= 4
+        data = LineGraphSeries(arrayOf(
+            DataPoint(1.0,list[0]),
+            DataPoint(2.0,list[1]),
+            DataPoint(3.0,list[2]),
+            DataPoint(4.0,list[3]),
+            DataPoint(5.0,list.average())
+        ))
+        data.color = Color.parseColor("#4f7c93")
+        data.isDrawDataPoints = true
+        data.dataPointsRadius = 10f
+        data.setAnimated(true)
+        line.removeAllSeries()
+        line.addSeries(data)
+
+        tl1.post{
+            tl1.text = info.rank.toString()
+            tr1.text = Math.abs(info.compare).toString()
+            val drawable: Drawable?
+            if (info.compare > 0) {
+                drawable = ContextCompat.getDrawable(context, R.drawable.up)
+                drawable?.setBounds(0, 0, 50, 50)
+            }
+            else if(info.compare < 0) {
+                drawable = ContextCompat.getDrawable(context, R.drawable.down)
+                drawable?.setBounds(0, 0, 50, 50)
+            }
+            else {
+                drawable = ContextCompat.getDrawable(context, R.drawable.flat)
+                drawable?.setBounds(0,0,50,10)
+            }
+            tr1.setCompoundDrawables(null,null,drawable,null)
+        }
+    }
+
+    private fun changeStatics(){
+        tl1 = layout3.findViewById(R.id.tv_left1)
+        tr1 = layout3.findViewById(R.id.tv_right1)
+        tl2 = layout3.findViewById(R.id.tv_left2)
+        tr2 = layout3.findViewById(R.id.tv_right2)
+        tl1.post{
+            tl1.text = info.rank.toString()
+            tr1.text = Math.abs(info.compare).toString()
+            val drawable: Drawable?
+                if (info.compare > 0) {
+                    drawable = ContextCompat.getDrawable(context, R.drawable.up)
+                    drawable?.setBounds(0, 0, 50, 50)
+                }
+                else if(info.compare < 0) {
+                    drawable = ContextCompat.getDrawable(context, R.drawable.down)
+                    drawable?.setBounds(0, 0, 50, 50)
+                }
+                else {
+                    drawable = ContextCompat.getDrawable(context, R.drawable.flat)
+                    drawable?.setBounds(0,0,50,10)
+                }
+            tr1.setCompoundDrawables(null,null,drawable,null)
+
         }
     }
 
     //初始化饼图
-    private fun initPie(v: View){
-        pie1 = v.findViewById(R.id.rate1)
-        pie2 = v.findViewById(R.id.rate2)
-        pie3 = v.findViewById(R.id.rate3)
-        pie4 = v.findViewById(R.id.rate4)
-
+    private fun initPie(){
+        pieList.clear()
+        pieList.apply {
+            add(layout2.findViewById(R.id.rate1))
+            add(layout2.findViewById(R.id.rate2))
+            add(layout2.findViewById(R.id.rate3))
+            add(layout2.findViewById(R.id.rate4))
+        }
         //视图
-        pie1.apply {
-            centerText = "80%"
-            isDrawHoleEnabled = true
-            setHoleColor(Color.WHITE)
-            isRotationEnabled = false
-            isHighlightPerTapEnabled = true
-            animateY(1400,Easing.EaseInOutQuad)
-            legend.isEnabled = false
-            description.isEnabled = false
+        pieList.forEach {
+            it.apply {
+                isDrawHoleEnabled = true
+                setHoleColor(Color.WHITE)
+                isRotationEnabled = false
+                isHighlightPerTapEnabled = true
+                legend.isEnabled = false
+                description.isEnabled = false
+            }
         }
-        pie2.apply {
-            centerText = "80%"
-            isDrawHoleEnabled = true
-            setHoleColor(Color.WHITE)
-            isRotationEnabled = false
-            isHighlightPerTapEnabled = true
-            animateY(1400,Easing.EaseInOutQuad)
-            legend.isEnabled = false
-            description.isEnabled = false
-        }
-        pie3.apply {
-            centerText = "80%"
-            isDrawHoleEnabled = true
-            setHoleColor(Color.WHITE)
-            isRotationEnabled = false
-            isHighlightPerTapEnabled = true
-            animateY(1400,Easing.EaseInOutQuad)
-            legend.isEnabled = false
-            description.isEnabled = false
-        }
-        pie4.apply {
-            centerText = "80%"
-            isDrawHoleEnabled = true
-            setHoleColor(Color.WHITE)
-            isRotationEnabled = false
-            isHighlightPerTapEnabled = true
-            animateY(1400,Easing.EaseInOutQuad)
-            legend.isEnabled = false
-            description.isEnabled = false
-        }
-
         //数据
-        val entries = arrayListOf(
-            PieEntry(0.8f),
-            PieEntry(0.2f)
-        )
-
-        val dataSet = PieDataSet(entries,"ALL")
-        dataSet.setColors(blue2,grey)
-        dataSet.selectionShift = 3f
-        dataSet.yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
-        dataSet.setDrawValues(false)
-
-        val data = PieData(dataSet)
-        data.setValueFormatter(PercentFormatter())
-        pie1.data = data
-        pie2.data = data
-        pie3.data = data
-        pie4.data = data
+        setInfoChart1Data()
+        //综合评分
+        textView.post {
+            textView.text = info.average.toString()
+        }
 
     }
 
     //初始化RecyclerView
     private fun initRecyclerView(v: View){
-        val rv = v.findViewById<RecyclerView>(R.id.tab1_rv)
-        val list = ArrayList<GradeBean>()
+        rv = v.findViewById(R.id.tab1_rv)
         val layoutManager = LinearLayoutManager(v.context)
-        list.apply {
-            add(GradeBean("毛泽东思想和中国特色社会主义理论体系概论（上）",0,10,85.22,85.5))
-            add(GradeBean("Java程序设计",1,20,79.89,80.0))
-            add(GradeBean("计算机硬件基础",2,30,80.56,70.0))
-            add(GradeBean("大学物理（A）",3,50,70.75,59.0))
-        }
-        rv?.layoutManager = layoutManager
-        rv?.adapter = Tab1RVAdapter(list)
+        rv.layoutManager = layoutManager
+        rv.adapter = Tab1RVAdapter(list)
     }
 
+    fun animateChart(){
+        pieList.forEach {
+            it.animateXY(600,600)
+        }
+        radar.animateXY(600,600)
+    }
+
+    fun setData(list: ArrayList<CourseBean>, info: InfoBean){
+        this.list = list
+        this.info = info
+        initRadar()
+        initPie()
+
+    }
+
+    fun setData2(){
+        changeStatics()
+    }
 }

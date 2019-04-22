@@ -1,15 +1,11 @@
 package com.example.fzugrade2.activity
 
-import android.animation.Animator
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.view.View
 import android.view.Window
 import android.widget.Toast
 import com.example.fzugrade2.ActivityCollector
@@ -72,6 +68,10 @@ class LoginActivity : AppCompatActivity() {
                     val spf = getSharedPreferences("data", Context.MODE_PRIVATE).edit()
                     spf.putString("token",token)
                         .putString("id",id_et.text.toString())
+                        .putInt("rank1",jsonObject.getInt("rank1"))
+                        .putInt("rank2",jsonObject.getInt("rank2"))
+                        .putInt("rank3",jsonObject.getInt("rank3"))
+                        .putInt("rank4",jsonObject.getInt("rank4"))
                     if(remember_cb.isChecked) {
                         spf.putBoolean("check",true)
                         spf.putString("pw", pw_et.text.toString())
@@ -81,8 +81,9 @@ class LoginActivity : AppCompatActivity() {
                         spf.remove("pw")
                     }
                     spf.apply()
-
                     startActivity(intent)
+                    //淡出淡入进入活动
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
                 }
                 S_NOT_EXIST -> Toast.makeText(this,"用户不存在",Toast.LENGTH_SHORT).show()
                 S_NO_ACCESS -> Toast.makeText(this,"权限不足",Toast.LENGTH_SHORT).show()

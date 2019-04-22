@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="6"
+
         />
 
     <LinearLayout
@@ -62,7 +63,7 @@
             android:layout_weight="1"
             android:textSize="12sp"
             android:gravity="center_horizontal"
-            android:text="是的"/>
+            android:text="@string/t1"/>
 
         <TextView
             android:layout_width="0dp"
@@ -70,7 +71,7 @@
             android:layout_weight="1"
             android:textSize="12sp"
             android:gravity="center_horizontal"
-            android:text="是的"/>
+            android:text="@string/t2"/>
 
         <TextView
             android:layout_width="0dp"
@@ -78,7 +79,7 @@
             android:layout_weight="1"
             android:textSize="12sp"
             android:gravity="center_horizontal"
-            android:text="是的"/>
+            android:text="@string/t3"/>
 
         <TextView
             android:layout_width="0dp"
@@ -86,7 +87,7 @@
             android:layout_weight="1"
             android:textSize="12sp"
             android:gravity="center_horizontal"
-            android:text="是的"/>
+            android:text="@string/t4"/>
 
 
 
@@ -110,8 +111,17 @@
             android:id="@+id/all_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:text="83"/>
+            android:textSize="25sp"/>
+
+        <ImageView
+            android:id="@+id/statement"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/about"
+            android:contentDescription="@string/app_name"
+            android:clickable="true"/>
 
     </LinearLayout>
 
